@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <!-- Hero Section -->
+    <div class="jumbotron bg-transparent">
+        <h1 class="display-3 font-weight-bold">Tender Alerts System</h1>
+        <p class="lead mt-3">Get notified about the latest tenders.</p>
+        <hr class="my-4">
+        <p class="mt-3">Simple. Fast. Reliable.</p>
+        <a class="btn btn-primary btn-lg mt-3" href="{{ url_for('dashboard') }}" role="button">Go to Dashboard</a>
+    </div>
+    
+</div>
+{% endblock %}

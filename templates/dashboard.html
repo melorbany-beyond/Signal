@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Welcome to your Dashboard</h1>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Show the total number of activities and agencies as cards -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Activity Names</h5>
+                <p class="card-text">{{ activities|length }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Agency Names</h5>
+                <p class="card-text">{{ agencies|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form for Adding Alert and Sending Email -->
+<form action="{{ url_for('get_tenders') }}" method="POST">
+    <!-- Filter Choice -->
+    <div class="form-group">
+        <label for="filter_choice">Filter by</label>
+        <select id="filter_choice" class="form-control">
+            <option value="">Choose Filter</option>
+            <option value="activity">Activity Name</option>
+            <option value="agency">Agency Name</option>
+            <option value="keywords">Keywords</option>
+            <option value="tenderName">Tender Name</option>
+        </select>
+    </div>
+
+<!-- Activity Filter -->
+<div id="activity_filter" class="form-group" style="display: none;">
+    <label for="activity_name">Select Activity Name(s)</label>
+    <select name="activity_name" class="form-control select2-search" multiple>
+        <option></option>
+        {% for activity in activities %}
+        <option value="{{ activity }}">{{ activity }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- Agency Filter -->
+<div id="agency_filter" class="form-group" style="display: none;">
+    <label for="agency_name">Select Agency Name(s)</label>
+    <select name="agency_name" class="form-control select2-search" multiple>
+        <option></option>
+        {% for agency in agencies %}
+        <option value="{{ agency }}">{{ agency }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+
+    <!-- Keyword Filter -->
+    <div id="keyword_filter" class="form-group" style="display: none;">
+        <label for="search_keywords">Enter Keywords (comma-separated)</label>
+        <input type="text" class="form-control" name="search_keywords" placeholder="Enter keywords">
+    </div>
+
+    <!-- Tender Name Filter -->
+    <div id="tender_name_filter" class="form-group" style="display: none;">
+        <label for="tender_name">Enter Tender Name (or part of it)</label>
+        <input type="text" class="form-control" name="tender_name" placeholder="Enter tender name">
+    </div>
+
+    <!-- Add input field for receiving emails -->
+    <div class="form-group">
+        <label for="emails">Enter Recipient Email(s) (comma-separated)</label>
+        <input type="text" class="form-control" name="emails" required>
+    </div>
+
+    <!-- Submit button and spinner -->
+    <button type="submit" class="btn btn-primary" id="submit-btn">
+        Create Alert
+    </button>
+    <div class="lds-spinner" id="loading-spinner" style="display: none;">
+        <div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+    
+</form>
+
+<div id="fetch-status" class="alert alert-info" style="display: none;"></div>
+
+<!-- Display Existing Alerts -->
+<h2 class="mt-4">Alerts Total:  {{ alerts|length }}</h2>
+<table class="table table-bordered table-hover">
+    <thead style="white-space: nowrap;">
+        <tr>
+            <th>#</th>
+            <th>Keyword</th>
+            <th>Keyword Type</th>
+            <th>Emails</th>
+            <th>Username</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alert in alerts %}
+        <tr>
+            <td>{{ loop.index }}</td> 
+            <td>{{ alert.keyword }}</td>
+            <td>{{ alert.keyword_type }}</td>
+            <td>{{ alert.emails }}</td>
+            <td>{{ alert.user.username }}</td>
+            <td>
+                
+                <form action="{{ url_for('delete_alert', id=alert.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Initialize the Select2 dropdown
+        function initializeSelect2() {
+            $('.select2-search').select2({
+                placeholder: "Search or select an option",
+                allowClear: true,
+                width: '100%',
+            });
+        }
+
+        initializeSelect2();
+
+        // Show the relevant select box based on the filter choice
+        $('#filter_choice').change(function() {
+    var filter = $(this).val();
+
+    // Hide and reset all filters first
+    $('#activity_filter').hide().find('select').val('').trigger('change'); // Reset Activity field
+    $('#agency_filter').hide().find('select').val('').trigger('change'); // Reset Agency field
+    $('#keyword_filter').hide().find('input').val(''); // Reset Keyword field
+    $('#tender_name_filter').hide().find('input').val(''); // Reset Tender Name field
+
+    // Show the relevant filter based on the selected choice
+    if (filter === 'activity') {
+        $('#activity_filter').show();
+    } else if (filter === 'agency') {
+        $('#agency_filter').show();
+    } else if (filter === 'keywords') {
+        $('#keyword_filter').show();
+    } else if (filter === 'tenderName') {
+        $('#tender_name_filter').show();
+    }
+
+    initializeSelect2();  // Reinitialize select2 after the change
+});
+
+    });
+</script>
+<script>
+$('form').on('submit', function() {
+    $('#submit-btn').hide();  // Hide the submit button
+    $('#loading-spinner').show();  // Show the spinner
+});
+
+
+</script>
+{% endblock %}
+
+

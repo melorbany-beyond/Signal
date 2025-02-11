@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Processing Tenders</title>
+    <script>
+        window.onload = function() {
+            fetch('/process_tenders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'activity_name': "{{ selected_activity }}",
+                    'agency_name': "{{ selected_agency }}",
+                    'emails': "{{ receiver_emails }}",
+                    'search_keywords': "{{ search_keywords }}",
+                    'tender_name': "{{ tender_name }}"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                window.location.href = "/dashboard";
+            })
+            .catch(error => console.error('Error:', error));
+        };
+    </script>
+</head>
+<body>
+    <h1>Processing your request, please wait...</h1>
+</body>
+</html>
