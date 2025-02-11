@@ -1,0 +1,9 @@
+Flask
+Flask_SQLAlchemy
+Flask_Bcrypt
+python-dotenv
+APScheduler
+requests
+flask-login
+psycopg2-binary
+sendgrid
