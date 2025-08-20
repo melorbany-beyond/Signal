@@ -1,0 +1,6 @@
+.env
+*.pem
+*.ppk
+*.key
+*.crt
+*.pfx
