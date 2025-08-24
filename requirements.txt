@@ -6,4 +6,6 @@ APScheduler
 requests
 flask-login
 psycopg2-binary
-sendgrid
+postmarker
+selenium
+webdriver-manager

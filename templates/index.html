@@ -2,15 +2,166 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="container mt-5 text-center">
-    <!-- Hero Section -->
-    <div class="jumbotron bg-transparent">
-        <h1 class="display-3 font-weight-bold">Tender Alerts System</h1>
-        <p class="lead mt-3">Get notified about the latest tenders.</p>
-        <hr class="my-4">
-        <p class="mt-3">Simple. Fast. Reliable.</p>
-        <a class="btn btn-primary btn-lg mt-3" href="{{ url_for('dashboard') }}" role="button">Go to Dashboard</a>
+<!-- Hero Section -->
+<div class="hero-section text-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="hero-content fade-in-up">
+                    <div class="hero-icon mb-4">
+                        <i class="fas fa-bell fa-6x text-primary"></i>
+                    </div>
+                    
+                    <h1 class="hero-title text-gradient mb-4">
+                        Signal
+                    </h1>
+                    
+                    <p class="hero-subtitle lead mb-4">
+                        Stay ahead of the competition with intelligent tender monitoring and instant notifications
+                    </p>
+                    
+                    <div class="hero-features mb-5">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="feature-item">
+                                    <i class="fas fa-bolt fa-2x text-accent mb-2"></i>
+                                    <h5>Real-time Alerts</h5>
+                                    <p class="text-muted">Instant notifications for matching tenders</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-item">
+                                    <i class="fas fa-search fa-2x text-accent mb-2"></i>
+                                    <h5>Smart Filtering</h5>
+                                    <p class="text-muted">Advanced search and filtering capabilities</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-item">
+                                    <i class="fas fa-chart-line fa-2x text-accent mb-2"></i>
+                                    <h5>Analytics</h5>
+                                    <p class="text-muted">Comprehensive reporting and insights</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-actions">
+                        {% if current_user.is_authenticated %}
+                            <a class="btn btn-primary btn-lg me-3" href="{{ url_for('dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Go to Dashboard
+                            </a>
+                        {% else %}
+                            <a class="btn btn-primary btn-lg me-3" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Sign In
+                            </a>
+                        {% endif %}
+                        
+                        <a class="btn btn-outline-primary btn-lg" href="#features">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
 </div>
+
+<!-- Features Section -->
+<div id="features" class="features-section py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-12 text-center">
+                <h2 class="text-gradient mb-3">
+                    <i class="fas fa-star me-3"></i>
+                    Why Choose Our System?
+                </h2>
+                <p class="text-muted lead">Built for efficiency and reliability</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-card fade-in-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket fa-3x text-primary"></i>
+                    </div>
+                    <h4>Fast & Efficient</h4>
+                    <p class="text-muted">Lightning-fast processing and real-time updates ensure you never miss important opportunities.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-card fade-in-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                    </div>
+                    <h4>Secure & Reliable</h4>
+                    <p class="text-muted">Enterprise-grade security with 99.9% uptime guarantee for your peace of mind.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-card fade-in-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt fa-3x text-primary"></i>
+                    </div>
+                    <h4>Mobile Friendly</h4>
+                    <p class="text-muted">Access your alerts anywhere, anytime with our responsive mobile-optimized interface.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="cta-content fade-in-up">
+                    <h3 class="text-white mb-3">Ready to Get Started?</h3>
+                    <p class="text-white-50 mb-4">Join thousands of professionals who trust our system for their tender monitoring needs.</p>
+                    
+                    {% if current_user.is_authenticated %}
+                        <a class="btn btn-accent btn-lg" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-arrow-right me-2"></i>
+                            Access Dashboard
+                        </a>
+                    {% else %}
+                        <a class="btn btn-accent btn-lg" href="{{ url_for('login') }}">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Get Started Today
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Add animation classes with delays
+        $('.fade-in-up').each(function(index) {
+            $(this).css('animation-delay', (index * 0.2) + 's');
+        });
+        
+        // Smooth scrolling for anchor links
+        $('a[href^="#"]').on('click', function(event) {
+            var target = $(this.getAttribute('href'));
+            if (target.length) {
+                event.preventDefault();
+                $('html, body').stop().animate({
+                    scrollTop: target.offset().top - 100
+                }, 1000);
+            }
+        });
+    });
+</script>
 {% endblock %}

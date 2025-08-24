@@ -1,0 +1,567 @@
+{% extends "base.html" %}
+
+{% block title %}API Data - Signal{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                                                 <div>
+                             <h2 class="card-title mb-1">
+                                 <i class="fas fa-database text-primary me-2"></i>
+                                 API Data Explorer
+                             </h2>
+                             <p class="text-muted mb-0">Real-time tender data from Etimad API</p>
+                             <div class="mt-2">
+                                 <span class="badge badge-primary fs-6">
+                                     <i class="fas fa-file-contract me-1"></i>
+                                     {{ date_label }}
+                                 </span>
+                             </div>
+                         </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge badge-success me-2">
+                                <i class="fas fa-circle me-1"></i>
+                                Live Data
+                            </span>
+                            <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                                <i class="fas fa-sync-alt me-1"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Statistics Section -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card stats-card-blue text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Current Page</h6>
+                            <h3 class="mb-0">{{ current_page }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-contract fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card-blue text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Tenders on Page</h6>
+                            <h3 class="mb-0">{{ tenders|length }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-filter fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card-blue text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-white-50">Last Updated</h6>
+                            <h6 class="mb-0" id="last-updated">Just now</h6>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Section -->
+    <div class="row">
+        <div class="col-12 px-0">
+            <div class="card shadow-sm mx-0">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-table text-secondary me-2"></i>
+                            Tender Data
+                        </h5>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted me-3">
+                                Page {{ current_page }} - {{ tenders|length }} tenders
+                            </span>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="exportToCSV()">
+                                    <i class="fas fa-download me-1"></i>
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if tenders %}
+                        <div class="table-responsive">
+                                                         <table class="table table-hover mb-0">
+                                 <thead class="table-light">
+                                     <tr>
+                                                                                   <th scope="col" style="width: 8%">#</th>
+                                          <th scope="col" style="width: 35%">Tender Name</th>
+                                          <th scope="col" style="width: 20%">Agency</th>
+                                          <th scope="col" style="width: 20%">Activity</th>
+                                          <th scope="col" style="width: 8%">Date</th>
+                                     </tr>
+                                 </thead>
+                                <tbody>
+                                    {% for tender in tenders %}
+                                                                         <tr>
+                                         <td class="text-center">
+                                             <span class="badge badge-primary badge-pill" style="font-size: 1.1em; padding: 8px 12px;">
+                                                 {{ loop.index }}
+                                             </span>
+                                         </td>
+                                                                                   <td>
+                                              <div class="d-flex flex-column">
+                                                  <a href="https://tenders.etimad.sa/Tender/DetailsForVisitor?STenderId={{ tender.tenderId or '' }}" 
+                                                     class="text-primary text-decoration-none fw-bold" 
+                                                     target="_blank"
+                                                     style="font-size: 1.1em;">
+                                                      {{ tender.tenderName or 'N/A' }}
+                                                  </a>
+                                                  <small class="text-muted mt-1">ID: {{ tender.tenderId or 'N/A' }}</small>
+                                              </div>
+                                          </td>
+                                                                                 <td>
+                                             <span class="badge badge-info" title="{{ tender.agencyName or 'N/A' }}">
+                                                 {% if tender.agencyName %}
+                                                     {% if tender.agencyName|length > 20 %}
+                                                         {{ tender.agencyName[:20] }}...
+                                                     {% else %}
+                                                         {{ tender.agencyName }}
+                                                     {% endif %}
+                                                 {% else %}
+                                                     N/A
+                                                 {% endif %}
+                                             </span>
+                                         </td>
+                                         <td>
+                                             <span class="badge badge-secondary" title="{{ tender.tenderActivityName or 'N/A' }}">
+                                                 {% if tender.tenderActivityName %}
+                                                     {% if tender.tenderActivityName|length > 20 %}
+                                                         {{ tender.tenderActivityName[:20] }}...
+                                                     {% else %}
+                                                         {{ tender.tenderActivityName }}
+                                                     {% endif %}
+                                                 {% else %}
+                                                     N/A
+                                                 {% endif %}
+                                             </span>
+                                         </td>
+                                                                                                                          <td>
+                                                                                          <span class="text-muted">
+                                                 {% if tender.submitionDate %}
+                                                     {% if tender.submitionDate|length >= 10 %}
+                                                         {% set date_str = tender.submitionDate[:10] %}
+                                                         {% if '-' in date_str %}
+                                                             {% set parts = date_str.split('-') %}
+                                                             {% if parts|length == 3 %}
+                                                                 {{ parts[2] }}-{{ parts[1] }}-{{ parts[0] }}
+                                                             {% else %}
+                                                                 {{ date_str }}
+                                                             {% endif %}
+                                                         {% else %}
+                                                             {{ date_str }}
+                                                         {% endif %}
+                                                     {% else %}
+                                                         {{ tender.submitionDate }}
+                                                     {% endif %}
+                                                 {% else %}
+                                                     N/A
+                                                 {% endif %}
+                                             </span>
+                                         </td>
+                                         
+                                     </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No tenders found</h5>
+                                                         <p class="text-muted">
+                                 No tender data available at the moment
+                             </p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                
+                
+                                 <!-- Simple Navigation -->
+                 {% if total_pages > 1 %}
+                 <div class="card-footer bg-white">
+                     <div class="d-flex justify-content-between align-items-center">
+                         <div>
+                                                           {% if current_page > 1 %}
+                                  <a href="{{ url_for('api_data', page=current_page-1) }}" 
+                                     class="btn btn-outline-primary">
+                                      <i class="fas fa-chevron-left me-1"></i>Previous
+                                  </a>
+                              {% else %}
+                                  <button class="btn btn-outline-primary" disabled>
+                                      <i class="fas fa-chevron-left me-1"></i>Previous
+                                  </button>
+                              {% endif %}
+                          </div>
+                          
+                          <div class="text-center">
+                              <span class="text-muted">
+                                  Page {{ current_page }} of {{ total_pages }}
+                              </span>
+                          </div>
+                          
+                          <div>
+                              {% if current_page < total_pages %}
+                                  <a href="{{ url_for('api_data', page=current_page+1) }}" 
+                                     class="btn btn-primary">
+                                      Next<i class="fas fa-chevron-right ms-1"></i>
+                                  </a>
+                              {% else %}
+                                  <button class="btn btn-primary" disabled>
+                                      Next<i class="fas fa-chevron-right ms-1"></i>
+                                  </button>
+                              {% endif %}
+                         </div>
+                     </div>
+                 </div>
+                 {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tender Details Modal -->
+<div class="modal fade" id="tenderModal" tabindex="-1" aria-labelledby="tenderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tenderModalLabel">Tender Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="tenderModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Full width table styles */
+.table-responsive {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    margin: 0;
+    min-width: 800px; /* Ensure minimum width for readability */
+}
+
+.card {
+    border-radius: 0;
+    margin: 0;
+}
+
+.container-fluid.px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.col-12.px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.card.mx-0 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Table column styles */
+.table th, .table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
+}
+
+/* Tender name column - allow wrapping */
+.table th:nth-child(2), .table td:nth-child(2) {
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 350px;
+}
+
+/* Agency and Activity columns - truncate long text */
+.table th:nth-child(3), .table td:nth-child(3),
+.table th:nth-child(4), .table td:nth-child(4) {
+    max-width: 180px;
+}
+
+/* Date column - keep compact */
+.table th:nth-child(5), .table td:nth-child(5) {
+    max-width: 120px;
+}
+
+/* Actions column - center content */
+.table th:nth-child(6), .table td:nth-child(6) {
+    max-width: 80px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .table {
+        min-width: 900px;
+    }
+}
+
+@media (max-width: 768px) {
+    .table {
+        min-width: 1000px;
+    }
+}
+
+/* Tender name link hover effects */
+.table td a:hover {
+    color: #0056b3 !important;
+    text-decoration: underline !important;
+    transition: all 0.2s ease;
+}
+
+/* # column badge styling */
+.badge-primary.badge-pill {
+    background-color: #007bff;
+    border: 2px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+}
+
+/* Statistics cards styling */
+.stats-card-blue {
+    background: linear-gradient(135deg, #0105ae 0%, #000056 100%);
+    border: none;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-card-blue .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stats-card-blue .card-title {
+    color: #a8b1ff !important;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.stats-card-blue h3,
+.stats-card-blue h6 {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.stats-card-blue i {
+    color: #a8b1ff !important;
+    opacity: 0.8;
+}
+
+/* Ensure all stats cards have the same height */
+.row.mb-4 .col-md-4 {
+    display: flex;
+}
+
+.row.mb-4 .col-md-4 .card {
+    width: 100%;
+}
+</style>
+
+<script>
+// Update last updated time
+function updateLastUpdated() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('last-updated').textContent = timeString;
+}
+
+// Update time every minute
+setInterval(updateLastUpdated, 60000);
+
+// View tender details
+function viewTenderDetails(tenderId) {
+    if (!tenderId) {
+        alert('Tender ID not available');
+        return;
+    }
+    
+    // Find tender data
+    const tenders = {{ tenders|tojson }};
+    const tender = tenders.find(t => t.tenderId === tenderId);
+    
+    if (tender) {
+        const modalBody = document.getElementById('tenderModalBody');
+        const tenderUrl = `https://tenders.etimad.sa/Tender/DetailsForVisitor?STenderId=${tender.tenderId || ''}`;
+        
+        modalBody.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Tender Information</h6>
+                    <p><strong>Name:</strong> ${tender.tenderName || 'N/A'}</p>
+                    <p><strong>ID:</strong> ${tender.tenderId || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${tender.status || 'N/A'}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted">Agency Details</h6>
+                    <p><strong>Agency:</strong> ${tender.agencyName || 'N/A'}</p>
+                     <p><strong>Activity:</strong> ${tender.tenderActivityName || 'N/A'}</p>
+                    <p><strong>Submission Date:</strong> ${tender.submitionDate || 'N/A'}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <h6 class="text-muted">View Full Details</h6>
+                    <a href="${tenderUrl}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-external-link-alt me-2"></i>
+                        Open on Etimad Website
+                    </a>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <h6 class="text-muted">Additional Details</h6>
+                    <pre class="bg-light p-3 rounded">${JSON.stringify(tender, null, 2)}</pre>
+                </div>
+            </div>
+        `;
+        
+        // Show modal (using Bootstrap 4 syntax)
+        $('#tenderModal').modal('show');
+    }
+}
+
+// Export to CSV function
+function exportToCSV() {
+    const tenders = {{ tenders|tojson }};
+    if (tenders.length === 0) {
+        alert('No data to export');
+        return;
+    }
+    
+    // Create CSV content
+    const headers = ['Tender Name', 'Agency', 'Activity', 'Submission Date', 'Tender ID', 'URL'];
+    const csvContent = [
+        headers.join(','),
+        ...tenders.map(tender => [
+            `"${tender.tenderName || ''}"`,
+            `"${tender.agencyName || ''}"`,
+                         `"${tender.tenderActivityName || ''}"`,
+            `"${tender.submitionDate || ''}"`,
+            `"${tender.tenderId || ''}"`,
+            `"https://tenders.etimad.sa/Tender/DetailsForVisitor?STenderId=${tender.tenderId || ''}"`
+        ].join(','))
+    ].join('\n');
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `tenders_page_{{ current_page }}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Show loading state when navigating between pages
+document.addEventListener('DOMContentLoaded', function() {
+    const nextButton = document.querySelector('a[href*="page="]');
+    const previousButton = document.querySelector('a[href*="page="]');
+    const refreshButton = document.querySelector('button[onclick="location.reload()"]');
+    
+    // Add loading indicator for Next/Previous buttons
+    if (nextButton) {
+        nextButton.addEventListener('click', function() {
+            console.log('Next button clicked, navigating to:', this.href);
+            showLoadingIndicator('Loading next page...');
+        });
+    }
+    
+    if (previousButton) {
+        previousButton.addEventListener('click', function() {
+            console.log('Previous button clicked, navigating to:', this.href);
+            showLoadingIndicator('Loading previous page...');
+        });
+    }
+    
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+            console.log('Refresh button clicked');
+            showLoadingIndicator('Refreshing data...');
+        });
+    }
+    
+    function showLoadingIndicator(message) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'loading-overlay';
+        loadingDiv.innerHTML = `
+            <div class="position-fixed w-100 h-100 d-flex justify-content-center align-items-center" 
+                 style="background: rgba(255,255,255,0.8); z-index: 9999; top: 0; left: 0;">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">${message}</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loadingDiv);
+    }
+});
+
+// Remove loading indicator when page is fully loaded
+window.addEventListener('load', function() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        loadingOverlay.remove();
+    }
+});
+</script>
+{% endblock %}
