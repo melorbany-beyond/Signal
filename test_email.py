@@ -359,3 +359,4 @@ if __name__ == "__main__":
     print("✅ Email template test completed!")
     print("📁 Open 'email_preview.html' in your browser to see the email design")
 
+
