@@ -40,7 +40,290 @@
         <div class="stat-number">{{ alerts|length }}</div>
         <div class="stat-label">Active Alerts</div>
     </div>
+    
+    <!-- Etimad Connection Status -->
+    <div class="stat-card fade-in-up" id="etimadStatusCard">
+        <div class="stat-icon">
+            <i class="fas fa-wifi fa-3x" id="etimadStatusIcon"></i>
+        </div>
+        <div class="stat-number" id="etimadStatusText">Checking...</div>
+        <div class="stat-label">Etimad Status</div>
+    </div>
+    
+    <!-- Scheduler Status (Admin Only) -->
+    {% if current_user.role == 'admin' %}
+    <div class="stat-card fade-in-up" id="schedulerStatusCard">
+        <div class="stat-icon">
+            <i class="fas fa-clock fa-3x" id="schedulerIcon"></i>
+        </div>
+        <div class="stat-number" id="schedulerStatus">Checking...</div>
+        <div class="stat-label">Scheduler Status</div>
+        <div class="stat-details" id="schedulerDetails" style="font-size: 0.8em; margin-top: 5px; color: #666;">
+            Next run: Loading...
+        </div>
+        <div class="stat-info" style="font-size: 0.7em; margin-top: 3px; color: #888;">
+            <i class="fas fa-info-circle me-1"></i>Daily at 11:51 AM
+            <a href="{{ url_for('scheduler_details') }}" class="ms-2 text-decoration-none" title="View detailed scheduler information">
+                <i class="fas fa-external-link-alt" style="font-size: 0.6em;"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<!-- Etimad Error Alert Section -->
+{% if session.get('etimad_error') %}
+<div class="etimad-error-alert mb-4">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle me-3 fa-2x text-warning"></i>
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb-1">
+                    <i class="fas fa-wifi me-2"></i>
+                    Etimad Server Connection Issue
+                </h6>
+                <p class="mb-2">{{ session.get('etimad_error') }}</p>
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    Error occurred at: {{ session.get('etimad_error_timestamp', 'Unknown time') }}
+                </small>
+            </div>
+        </div>
+        <div class="mt-3">
+            <form method="POST" action="{{ url_for('clear_etimad_error') }}" class="d-inline">
+                <button type="submit" class="btn btn-outline-warning btn-sm me-2">
+                    <i class="fas fa-times me-1"></i>
+                    Clear Message
+                </button>
+            </form>
+            <button type="button" class="btn btn-info btn-sm" onclick="retryEtimadConnection()">
+                <i class="fas fa-redo me-1"></i>
+                Try Again
+            </button>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+
+<!-- User Notification Section -->
+{% if current_user.role == 'admin' %}
+<div class="user-notification mb-4">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-3 fa-2x text-info"></i>
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb-1">
+                    <i class="fas fa-envelope me-2"></i>
+                    Email Processing Update
+                </h6>
+                <p class="mb-2">
+                    Your tender alerts and emails are now processed in the background for better reliability. 
+                    When you create alerts or manually fetch tenders, emails will be automatically queued and sent with proper delays.
+                </p>
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    You'll receive your emails shortly after they're processed.
+                </small>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+
+<!-- Admin-Only Sections -->
+{% if current_user.role == 'admin' %}
+<!-- Email Processing Update (Admin Only) -->
+<div class="admin-email-processing mb-4">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-envelope me-3 fa-2x text-info"></i>
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb-1">
+                    <i class="fas fa-envelope me-2"></i>
+                    Email Processing Update
+                </h6>
+                <p class="mb-2">
+                    Your tender alerts and emails are now processed in the background for better reliability. 
+                    When you create alerts or manually fetch tenders, emails will be automatically queued and sent with proper delays.
+                </p>
+                <small class="text-muted">
+                    <i class="fas fa-clock me-1"></i>
+                    You'll receive your emails shortly after they're processed.
+                </small>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+<!-- Instant Background Processing (Admin Only) -->
+<div class="admin-background-processing mb-4">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-rocket me-3 fa-2x text-success"></i>
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb-1">
+                    <i class="fas fa-rocket me-2"></i>
+                    Instant Background Processing
+                </h6>
+                <p class="mb-2">
+                    <strong>Great news!</strong> You can now close this page immediately after creating alerts or fetching tenders. 
+                    All processing happens in the background, and you'll receive emails when complete.
+                </p>
+                <small class="text-muted">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    No more waiting - create alerts and close the page!
+                </small>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- User Task Status -->
+<div class="user-task-status mb-4">
+    <div class="card border-success">
+        <div class="card-header bg-success text-white">
+            <h6 class="mb-0">
+                <i class="fas fa-tasks me-2"></i>
+                Your Background Tasks
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="task-stat">
+                        <div class="task-number" id="userAlertsCount">{{ alerts|length }}</div>
+                        <div class="task-label">Active Alerts</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="task-stat">
+                        <div class="task-number" id="queueStatus">-</div>
+                        <div class="task-label">Queue Status</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="task-stat">
+                        <div class="task-number" id="processingStatus">-</div>
+                        <div class="task-label">Processing</div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    All tasks are processed automatically in the background
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Queue Status Section -->
+{% if current_user.role == 'admin' %}
+<div class="email-queue-status mb-4">
+    <!-- Background Processing Notice -->
+    <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-3 fa-2x text-info"></i>
+            <div class="flex-grow-1">
+                <h6 class="alert-heading mb-1">
+                    <i class="fas fa-clock me-2"></i>
+                    Background Email Processing
+                </h6>
+                <p class="mb-2">
+                    To prevent overwhelming email services and ensure reliable delivery, all emails are now processed in the background. 
+                    When you create alerts or manually fetch tenders, emails will be queued and sent automatically with proper delays.
+                </p>
+                <small class="text-muted">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    This improves system reliability and prevents rate limiting issues.
+                </small>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    
+    <div class="card border-info">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-envelope me-2"></i>
+                Email Queue Status
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>
+                                Background Email Processing
+                            </h6>
+                            <small class="text-muted">Monitor email queue and processor status</small>
+                        </div>
+                        <form method="POST" action="{{ url_for('start_email_processor') }}" class="d-inline">
+                            <button type="submit" id="startProcessorBtn" class="btn btn-success btn-sm">
+                                <i class="fas fa-play me-2"></i>
+                                Start Processor
+                            </button>
+                        </form>
+                    </div>
+                    <div class="mt-3">
+                        <div class="queue-info">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="queue-stat">
+                                        <div class="queue-number" id="queueSize">-</div>
+                                        <div class="queue-label">Emails in Queue</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="queue-stat">
+                                        <div class="queue-number" id="processorStatus">-</div>
+                                        <div class="queue-label">Processor Status</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="mb-2">
+                            <i class="fas fa-info-circle me-2"></i>
+                            How it works
+                        </h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-1">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Emails are queued for background processing
+                            </li>
+                            <li class="mb-1">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Prevents overwhelming email services
+                            </li>
+                            <li class="mb-1">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Automatic retry on failures
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-clock text-info me-2"></i>
+                                Emails sent with 5-second intervals
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- Manual Trigger Section for Admins -->
 {% if current_user.role == 'admin' %}
@@ -105,6 +388,27 @@
                                 <div id="fetchTestContent"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Background Email Test -->
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">
+                                <i class="fas fa-envelope me-2"></i>
+                                Background Email Processing Test
+                            </h6>
+                            <small class="text-muted">Test the background email processing system</small>
+                        </div>
+                        <form method="POST" action="{{ url_for('test_background_email') }}" class="d-inline">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Test Background Email
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -198,6 +502,16 @@
                 Create Alert
             </button>
             
+            <button type="button" class="btn btn-success btn-lg ms-3" id="manual-fetch-btn" onclick="submitManualFetch()">
+                <i class="fas fa-download me-2"></i>
+                Fetch Tenders Now
+            </button>
+            
+            <a href="{{ url_for('trigger_alerts_manual') }}" class="btn btn-warning btn-lg ms-3" id="manual-trigger-btn">
+                <i class="fas fa-play me-2"></i>
+                Trigger Alerts Now
+            </a>
+            
             <div class="lds-spinner" id="loading-spinner" style="display: none;">
                 <div></div><div></div><div></div><div></div><div></div>
                 <div></div><div></div><div></div><div></div><div></div><div></div>
@@ -285,6 +599,19 @@
                 theme: 'default'
             });
         }
+        
+        // Manual fetch function
+        function submitManualFetch() {
+            // Get form data
+            const form = $('form[action="{{ url_for("get_tenders") }}"]');
+            const formData = new FormData(form[0]);
+            
+            // Change action to manual fetch
+            form.attr('action', '{{ url_for("fetch_tenders_manual") }}');
+            
+            // Submit the form
+            form.submit();
+        }
 
         initializeSelect2();
 
@@ -323,6 +650,38 @@
             $(this).css('animation-delay', (index * 0.1) + 's');
         });
         
+        // Check Etimad Status on page load (Admin Only)
+        if (document.getElementById('etimadStatusCard')) {
+            checkEtimadStatus();
+            
+            // Set up periodic status check every 5 minutes
+            setInterval(checkEtimadStatus, 5 * 60 * 1000);
+        }
+        
+        // Check Scheduler Status on page load (Admin Only)
+        if (document.getElementById('schedulerStatusCard')) {
+            checkSchedulerStatus();
+            
+            // Set up periodic scheduler status check every 2 minutes
+            setInterval(checkSchedulerStatus, 2 * 60 * 1000);
+        }
+        
+        // Set up periodic email queue status check every 30 seconds (Admin Only)
+        if (document.getElementById('queueSize')) {
+            setInterval(checkEmailQueueStatus, 30 * 1000);
+            
+            // Check email queue status on page load
+            checkEmailQueueStatus();
+        }
+        
+        // Set up periodic user task status check every 30 seconds (Regular Users Only)
+        if (document.getElementById('userAlertsCount')) {
+            setInterval(checkUserTaskStatus, 30 * 1000);
+            
+            // Check user task status on page load
+            checkUserTaskStatus();
+        }
+        
         // Etimad Connection Test
         $('#testEtimadBtn').click(function() {
             const btn = $(this);
@@ -335,10 +694,15 @@
                     $('#etimadTestResult').show();
                     let content = '';
                     
+                    // Update status card based on result
                     if (data.error) {
                         content = `<div class="alert alert-danger">
                             <strong>Error:</strong> ${data.error}
                         </div>`;
+                        // Update status to offline
+                        $('#etimadStatusIcon').removeClass('text-success text-info text-warning').addClass('text-danger');
+                        $('#etimadStatusText').text('Offline');
+                        $('#etimadStatusCard').addClass('status-error');
                     } else {
                         content = `
                             <div class="row">
@@ -371,6 +735,11 @@
                                 </div>
                             `;
                         }
+                        
+                        // Update status to online
+                        $('#etimadStatusIcon').removeClass('text-danger text-info text-warning').addClass('text-success');
+                        $('#etimadStatusText').text('Online');
+                        $('#etimadStatusCard').removeClass('status-error');
                     }
                     
                     $('#etimadTestContent').html(content);
@@ -433,6 +802,19 @@
                     }
                     
                     $('#fetchTestContent').html(content);
+                    
+                    // Update status based on result
+                    if (data.success) {
+                        // Update status to online
+                        $('#etimadStatusIcon').removeClass('text-danger text-info text-warning').addClass('text-success');
+                        $('#etimadStatusText').text('Online');
+                        $('#etimadStatusCard').removeClass('status-error');
+                    } else {
+                        // Update status to offline
+                        $('#etimadStatusIcon').removeClass('text-success text-info text-warning').addClass('text-danger');
+                        $('#etimadStatusText').text('Offline');
+                        $('#etimadStatusCard').addClass('status-error');
+                    }
                 })
                 .fail(function(xhr, status, error) {
                     $('#fetchTestResult').show();
@@ -441,11 +823,176 @@
                             <strong>Request Failed:</strong> ${status} - ${error}
                         </div>
                     `);
+                    
+                    // Update status to offline
+                    $('#etimadStatusIcon').removeClass('text-success text-info text-warning').addClass('text-danger');
+                    $('#etimadStatusText').text('Offline');
+                    $('#etimadStatusCard').addClass('status-error');
                 })
                 .always(function() {
                     btn.prop('disabled', false).html(originalText);
                 });
         });
+        
+        // Check User Task Status Function
+        function checkUserTaskStatus() {
+            // Only check if user task status elements exist (Regular Users Only)
+            if (!$('#userAlertsCount').length) return;
+            
+            $.get('/background_task_status')
+                .done(function(data) {
+                    if (data.error) {
+                        console.log('Error checking user task status:', data.error);
+                        return;
+                    }
+                    
+                    // Update user alerts count
+                    $('#userAlertsCount').text(data.total_alerts);
+                    
+                    // Update queue status
+                    if (data.queue_size > 0) {
+                        $('#queueStatus').text(`${data.queue_size} tasks`).removeClass('text-muted').addClass('text-warning');
+                    } else {
+                        $('#queueStatus').text('Empty').removeClass('text-warning').addClass('text-muted');
+                    }
+                    
+                    // Update processing status
+                    if (data.is_processing) {
+                        $('#processingStatus').text('Active').removeClass('text-muted').addClass('text-success');
+                    } else {
+                        $('#processingStatus').text('Stopped').removeClass('text-success').addClass('text-danger');
+                    }
+                })
+                .fail(function() {
+                    console.log('Failed to check user task status');
+                });
+        }
+        
+        // Check Scheduler Status Function
+        function checkSchedulerStatus() {
+            // Only check if scheduler status elements exist (Admin Only)
+            if (!$('#schedulerStatus').length) return;
+            
+            $.get('/scheduler_status')
+                .done(function(data) {
+                    if (data.error) {
+                        console.log('Error checking scheduler status:', data.error);
+                        return;
+                    }
+                    
+                    // Update scheduler status display
+                    if (data.scheduler_running) {
+                        $('#schedulerStatus').text('Running').removeClass('text-danger').addClass('text-success');
+                        $('#schedulerIcon').removeClass('text-danger').addClass('text-success');
+                        $('#schedulerDetails').text(`Next run: ${data.next_scheduled_run_relative}`);
+                    } else {
+                        $('#schedulerStatus').text('Stopped').removeClass('text-success').addClass('text-danger');
+                        $('#schedulerIcon').removeClass('text-success').addClass('text-danger');
+                        $('#schedulerDetails').text('Next run: Not scheduled');
+                    }
+                })
+                .fail(function() {
+                    console.log('Failed to check scheduler status');
+                });
+        }
+        
+        // Check Email Queue Status Function
+        function checkEmailQueueStatus() {
+            // Only check if email queue elements exist (Admin Only)
+            if (!$('#queueSize').length) return;
+            
+            $.get('/email_queue_status')
+                .done(function(data) {
+                    if (data.error) {
+                        console.log('Error checking email queue status:', data.error);
+                        return;
+                    }
+                    
+                    // Update queue size
+                    $('#queueSize').text(data.queue_size);
+                    
+                    // Update processor status
+                    if (data.is_processing) {
+                        $('#processorStatus').text('Running').removeClass('text-danger').addClass('text-success');
+                        $('#startProcessorBtn').prop('disabled', true).html('<i class="fas fa-stop me-2"></i>Running');
+                    } else {
+                        $('#processorStatus').text('Stopped').removeClass('text-success').addClass('text-danger');
+                        $('#startProcessorBtn').prop('disabled', false).html('<i class="fas fa-play me-2"></i>Start Processor');
+                    }
+                })
+                .fail(function() {
+                    console.log('Failed to check email queue status');
+                });
+        }
+        
+        // Check Etimad Status Function
+        function checkEtimadStatus() {
+            // Only check if Etimad status elements exist (Admin Only)
+            if (!$('#etimadStatusCard').length) return;
+            
+            const statusCard = $('#etimadStatusCard');
+            const statusIcon = $('#etimadStatusIcon');
+            const statusText = $('#etimadStatusText');
+            
+            // Show checking state
+            statusIcon.removeClass('text-success text-danger text-warning').addClass('text-info');
+            statusText.text('Checking...');
+            
+            // Test the connection
+            $.get('/test_etimad')
+                .done(function(data) {
+                    if (data.error) {
+                        // Connection failed
+                        statusIcon.removeClass('text-info').addClass('text-danger');
+                        statusText.text('Offline');
+                        statusCard.addClass('status-error');
+                    } else {
+                        // Connection successful
+                        statusIcon.removeClass('text-info').addClass('text-success');
+                        statusText.text('Online');
+                        statusCard.removeClass('status-error');
+                    }
+                })
+                .fail(function() {
+                    // Request failed
+                    statusIcon.removeClass('text-info').addClass('text-warning');
+                    statusText.text('Error');
+                    statusCard.addClass('status-error');
+                });
+        }
+        
+        // Retry Etimad Connection Function
+        function retryEtimadConnection() {
+            // Show loading state
+            const retryBtn = event.target;
+            const originalText = retryBtn.innerHTML;
+            retryBtn.disabled = true;
+            retryBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Retrying...';
+            
+            // Test the connection
+            $.get('/test_etimad')
+                .done(function(data) {
+                    if (data.error) {
+                        // Still has error, show updated error message
+                        location.reload(); // Reload to show updated error
+                    } else {
+                        // Connection successful, clear error and reload
+                        $.post('/clear_etimad_error')
+                            .done(function() {
+                                location.reload();
+                            })
+                            .fail(function() {
+                                location.reload();
+                            });
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    // Request failed, show error
+                    alert('Failed to retry connection. Please try again later.');
+                    retryBtn.disabled = false;
+                    retryBtn.innerHTML = originalText;
+                });
+        }
     });
 </script>
 {% endblock %}

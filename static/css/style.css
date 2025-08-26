@@ -31,6 +31,217 @@
     box-sizing: border-box;
 }
 
+/* Etimad Error Alert Styling */
+.etimad-error-alert .alert {
+    border: 2px solid var(--warning);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+}
+
+.etimad-error-alert .alert-heading {
+    color: var(--gray-800);
+    font-weight: 700;
+}
+
+.etimad-error-alert .btn-outline-warning {
+    border-color: var(--warning);
+    color: var(--gray-800);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.etimad-error-alert .btn-outline-warning:hover {
+    background-color: var(--warning);
+    border-color: var(--warning);
+    color: var(--gray-800);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.etimad-error-alert .btn-info {
+    background: linear-gradient(135deg, var(--info) 0%, #138496 100%);
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.etimad-error-alert .btn-info:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.etimad-error-alert .alert-dismissible .btn-close {
+    background-size: 1.2em;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.etimad-error-alert .alert-dismissible .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Etimad Status Card Styling */
+.stat-card.status-error {
+    border: 2px solid var(--danger);
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+    animation: pulse-error 2s infinite;
+}
+
+@keyframes pulse-error {
+    0% { box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); }
+    50% { box-shadow: 0 4px 6px rgba(220, 53, 69, 0.4); }
+    100% { box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); }
+}
+
+.stat-card .stat-icon .text-success {
+    color: var(--success) !important;
+}
+
+.stat-card .stat-icon .text-danger {
+    color: var(--danger) !important;
+}
+
+.stat-card .stat-icon .text-warning {
+    color: var(--warning) !important;
+}
+
+.stat-card .stat-icon .text-info {
+    color: var(--info) !important;
+}
+
+/* Email Queue Status Styling */
+.email-queue-status .card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.email-queue-status .card-header {
+    background: linear-gradient(135deg, var(--info) 0%, #138496 100%) !important;
+    border: none;
+}
+
+.queue-info {
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    border: 1px solid var(--gray-200);
+}
+
+.queue-stat {
+    padding: 0.5rem;
+}
+
+.queue-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.25rem;
+}
+
+.queue-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.email-queue-status .btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
+    border: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.email-queue-status .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.email-queue-status .btn-success:disabled {
+    background: linear-gradient(135deg, var(--gray-500) 0%, var(--gray-600) 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* User Notification Styling */
+.user-notification .alert {
+    border: 2px solid var(--info);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 100%);
+}
+
+.user-notification .alert-heading {
+    color: var(--gray-800);
+    font-weight: 700;
+}
+
+.user-notification .btn-close {
+    background-size: 1.2em;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.user-notification .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Background Notice Styling */
+.background-notice .alert {
+    border: 2px solid var(--success);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0fff0 100%);
+}
+
+.background-notice .alert-heading {
+    color: var(--gray-800);
+    font-weight: 700;
+}
+
+.background-notice .btn-close {
+    background-size: 1.2em;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.background-notice .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* User Task Status Styling */
+.user-task-status .card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.user-task-status .card-header {
+    background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%) !important;
+    border: none;
+}
+
+.task-stat {
+    padding: 0.5rem;
+}
+
+.task-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.25rem;
+}
+
+.task-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, var(--light-blue) 0%, #ffffff 100%);

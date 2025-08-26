@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Scheduler Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="text-gradient">
+                    <i class="fas fa-clock me-3"></i>
+                    Scheduler Details
+                </h1>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Schedule Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Schedule:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ scheduler_info.schedule }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Next Run:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ scheduler_info.next_run }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Time Until:</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="badge bg-info">{{ scheduler_info.time_until }}</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Timezone:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ scheduler_info.timezone }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Retry System
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Status:</strong>
+                        </div>
+                        <div class="col-6">
+                            {% if scheduler_info.retry_system.enabled %}
+                                <span class="badge bg-success">Enabled</span>
+                            {% else %}
+                                <span class="badge bg-danger">Disabled</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Retry Delay:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ scheduler_info.retry_system.retry_delay }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Max Retries:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ scheduler_info.retry_system.max_retries }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <strong>Description:</strong>
+                            <p class="mt-2 text-muted small">
+                                {{ scheduler_info.retry_system.description }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Check Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>
+                        Health Monitoring
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Health Check:</strong>
+                        </div>
+                        <div class="col-6">
+                            {{ scheduler_info.health_check }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Database:</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="badge bg-success">Monitored</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Connection:</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="badge bg-success">Auto-recovery</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>
+                        Manual Controls
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('trigger_alerts_manual') }}" class="btn btn-warning">
+                            <i class="fas fa-play me-2"></i>
+                            Trigger Alerts Now
+                        </a>
+                        <a href="{{ url_for('scheduler_status') }}" class="btn btn-outline-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Check Status (JSON)
+                        </a>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Manual triggers are useful for testing or immediate processing needs.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>
+                        How the Scheduler Works
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-calendar-day fa-3x text-primary mb-2"></i>
+                                <h6>1. Scheduled Run</h6>
+                                <p class="small text-muted">
+                                    Every day at 11:51 AM, the system automatically processes all alerts
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-2"></i>
+                                <h6>2. Error Handling</h6>
+                                <p class="small text-muted">
+                                    If an error occurs, the system waits 30 minutes and tries again
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                                <h6>3. Success & Reset</h6>
+                                <p class="small text-muted">
+                                    After success or max retries, it returns to the normal daily schedule
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-gradient {
+    background: linear-gradient(135deg, #0105ae 0%, #f1c061 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border: none;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+</style>
+{% endblock %}
+
